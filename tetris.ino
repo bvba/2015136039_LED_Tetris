@@ -14,7 +14,7 @@ RGBmatrixPanel matrix(A, B, C, CLK, LAT, OE, false);
 #define LEFT  2
 #define DOWN  3
 #define RIGHT 4
-#define ON    5   // 모 변
+#define ON    5   // 모양 변경
 #define joystick_X   A4
 #define joystick_Y   A5
 #define joystick_SW  2
