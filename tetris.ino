@@ -14,24 +14,23 @@ RGBmatrixPanel matrix(A, B, C, CLK, LAT, OE, false);
 #define LEFT  2
 #define DOWN  3
 #define RIGHT 4
-#define ON    5   // change
+#define ON    5   // 모 변
 #define joystick_X   A4
 #define joystick_Y   A5
 #define joystick_SW  2
 // 조이스틱 사용을 위한 정의
 
 #define MAIN_X 32
-#define MAIN_Y 16   // 게임판 크기
+#define MAIN_Y 16   // 게임판 크기, x : 세로, y : 
 
 int level = 0;            // 레벨에 따른 속도 조절
 uint8_t bx = 0, by = 0;   // 테스트를 위해 초기값 설정해놓음 추후 reset 할것!
 int joystick();           // joystick 입력값을 반환하는 함수
 void move_block(int key); // joystick 입력값을 받아서 블럭을 옮겨주는 함수
-bool check_crush();       // 충돌을 검사해주는 함수, 충돌인경우 false, 정상인경우 true
 void draw_main();         // 게임판을 출력해주는 함수
 
 class Block {
-  uint8_t r, g, b;   // 색상, r = g = b = 7 일 경우 흰색
+  uint8_t r, g, b;   // 색상, r = g = b 일 경우 흰색, 숫자가 커지면 밝아진다.
   bool on_off;       // led의 on, off 상태를 나타냄
 
   public :
@@ -57,7 +56,7 @@ class Block {
   void led_turn(int x, int y) {
     if(on_off) matrix.drawPixel(x, y, matrix.Color333(r, g, b));
     else matrix.drawPixel(x, y, matrix.Color333(0, 0, 0));
-  } // (외부에서 조절)(Block의 onOff 값이 변경되었다면) led의 상태를 바꿔줌
+  } // (외부에서 조절)(Block의 onOff 값이 변경되었다면) led를 끄거나 켜줌
   
   bool equal(Block b1) {
     if(r == b1.r && g == b1.g && b == b1.b && on_off == b1.on_off) return true;
@@ -81,6 +80,7 @@ void setup() {
   digitalWrite(joystick_SW, HIGH);
   Serial.begin(9600);
   randomSeed(analogRead(11));
+  
   main_org[bx][by].set_block(1, 1, 1, true);
   main_cpy[bx][by].cpy(main_org[bx][by]);
   main_org[bx][by].led_turn(bx, by);
