@@ -10,18 +10,18 @@
 RGBmatrixPanel matrix(A, B, C, CLK, LAT, OE, false);
 // RGBmatrix library 사용을 위한 정의
 
-#define UP    1
+#define UP    1   // 모양 변경
 #define LEFT  2
 #define DOWN  3
-#define RIGHT 4
-#define ON    5   // 모양 변경
+#define RIGHT 4   // 블럭 이동
+#define ON    5   // hard drop
 #define joystick_X   A4
 #define joystick_Y   A5
 #define joystick_SW  2
 // 조이스틱 사용을 위한 정의
 
 #define MAIN_X 32
-#define MAIN_Y 16   // 게임판 크기, x : 세로, y : 
+#define MAIN_Y 16   // 게임판 크기, x : 세로, y : 가로
 
 int level = 0;            // 레벨에 따른 속도 조절
 uint8_t bx = 0, by = 0;   // 테스트를 위해 초기값 설정해놓음 추후 reset 할것!
@@ -38,9 +38,9 @@ class Block {
     set_block(0, 0, 0, false);
   } // default 생성자
   
-  Block(bool onOff) {
-    set_block(7, 7, 7, on_off);
-  } // 블록모양을 저장하는 배열을 만들 때 사용
+  Block(uint8_t r1, uint8_t g1, uint8_t b1, bool onOff) {
+    set_block(r1, g1, b1, on_off);
+  } // 블록모양을 저장하는 배열을 만들 때 사용하는 생성자
   
   void set_block(uint8_t r1, uint8_t g1, uint8_t b1, bool state) {
     r = r1;
@@ -73,6 +73,17 @@ class Block {
 
 Block main_org[MAIN_X][MAIN_Y];
 Block main_cpy[MAIN_X][MAIN_Y];
+Block minoL;
+/*
+테트리미노
+I	sky
+O	yellow
+T	purple
+J	blue
+L	orange
+S	green
+Z	red
+*/
 
 void setup() {
   matrix.begin();
