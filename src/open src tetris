@@ -1,3 +1,5 @@
+// 출처 : http://blog.naver.com/azure0777/220295388741
+
 #include<stdio.h>
 #include<windows.h>
 #include<conio.h>
@@ -677,3 +679,4 @@ void pause(void){ //게임 일시정지 함수
 
 
 // 참고 source code
+// 출처 : http://blog.naver.com/azure0777/220295388741
