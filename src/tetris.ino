@@ -103,7 +103,7 @@ Block blocks[7][4][4][4] = {      // 7가지 모양, 4가지 방향, 4 * 4 배�
   {{{empty, empty, empty, empty}, {minoZ, minoZ, empty, empty}, {empty, minoZ, minoZ, empty}, {empty, empty, empty, empty}},
    {{empty, empty, empty, empty}, {empty, empty, minoZ, empty}, {empty, minoZ, minoZ, empty}, {empty, minoZ, empty, empty}},
    {{empty, empty, empty, empty}, {minoZ, minoZ, empty, empty}, {empty, minoZ, minoZ, empty}, {empty, empty, empty, empty}},
-   {{empty, empty, empty, empty}, {empty, empty, minoZ, empty}, {empty, minoZ, minoZ, empty}, {empty, minoZ, empty, empty}}}
+   {{empty, empty, empty, empty}, {empty, empty, minoZ, empty}, {empty, minoZ, minoZ, empty}, {empty, minoZ, empty, empty}}},
   
   // mino L
   {{{empty, empty, empty, empty}, {minoL, empty, empty, empty}, {minoL, minoL, minoL, empty}, {empty, empty, empty, empty}},
@@ -119,7 +119,7 @@ Block blocks[7][4][4][4] = {      // 7가지 모양, 4가지 방향, 4 * 4 배�
 
   // mino S
   {{{empty, empty, empty, empty}, {empty, minoS, minoS, empty}, {minoS, minoS, empty, empty}, {empty, empty, empty, empty}}, 
-   {{empty, empty, empty, empty}, {minoS, empty, empty, empty}, {minoS, minoS, empty, empty}, [empty, minoS, empty, empty}}, 
+   {{empty, empty, empty, empty}, {minoS, empty, empty, empty}, {minoS, minoS, empty, empty}, {empty, minoS, empty, empty}}, 
    {{empty, empty, empty, empty}, {empty, minoS, minoS, empty}, {minoS, minoS, empty, empty}, {empty, empty, empty, empty}}, 
    {{empty, empty, empty, empty}, {minoS, empty, empty, empty}, {minoS, minoS, empty, empty}, {empty, minoS, empty, empty}}},
 
@@ -140,7 +140,7 @@ Block blocks[7][4][4][4] = {      // 7가지 모양, 4가지 방향, 4 * 4 배�
    {{empty, empty, empty, empty}, {empty, minoT, empty, empty}, {empty, minoT, minoT, empty}, {empty, minoT, empty, empty}}, 
    {{empty, empty, empty, empty}, {empty, empty, empty, empty}, {minoT, minoT, minoT, empty}, {empty, minoT, empty, empty}}, 
    {{empty, empty, empty, empty}, {empty, minoT, empty, empty}, {minoT, minoT, empty, empty}, {empty, minoT, empty, empty}}}
-}
+};
 
 void setup() {
   matrix.begin();
