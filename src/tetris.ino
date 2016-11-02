@@ -148,9 +148,9 @@ void setup() {
   digitalWrite(joyStickSW, HIGH); // pull up 설정
   Serial.begin(9600);
   randomSeed(analogRead(A7) % 23);
-  random(7);
-  blockType = (random(7) + random(7) + random(7)) / 3;
-  blockState = (random(4) + random(4) + random(4)) / 3;
+  random(100);
+  blockType = random(10000) % 7;
+  blockState = random(10000) % 4;
   for(int i = 0 ; i < 4 ; ++i) {
     for(int j = 0 ; j < 4 ; ++j) {
       if(blocks[blockType][blockState][i][j] != empty) {
