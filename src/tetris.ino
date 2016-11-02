@@ -94,22 +94,22 @@ Block minoI(0, 2, 2, true); // I sky
 Block minoJ(0, 0, 2, true); // J blue
 Block minoT(2, 0, 2, true); // T purple
 
-int blockType = 3;
-int blockState = 3;
+int blockType;
+int blockState;
 
 // 테트리미노를 나타내기 위한 배열
 Block blocks[7][4][4][4] = {      // 7가지 모양(blockType), 4가지 방향(blockState), 4 * 4 배열
   // mino Z
-  {{{empty, empty, empty, empty}, {minoZ, minoZ, empty, empty}, {empty, minoZ, minoZ, empty}, {empty, empty, empty, empty}},
-   {{empty, empty, empty, empty}, {empty, empty, minoZ, empty}, {empty, minoZ, minoZ, empty}, {empty, minoZ, empty, empty}},
-   {{empty, empty, empty, empty}, {minoZ, minoZ, empty, empty}, {empty, minoZ, minoZ, empty}, {empty, empty, empty, empty}},
-   {{empty, empty, empty, empty}, {empty, empty, minoZ, empty}, {empty, minoZ, minoZ, empty}, {empty, minoZ, empty, empty}}},
+  {{{empty, empty, empty, empty}, {empty, minoZ, minoZ, empty}, {minoZ, minoZ, empty, empty}, {empty, empty, empty, empty}}, 
+   {{empty, empty, empty, empty}, {minoZ, empty, empty, empty}, {minoZ, minoZ, empty, empty}, {empty, minoZ, empty, empty}}, 
+   {{empty, empty, empty, empty}, {empty, minoZ, minoZ, empty}, {minoZ, minoZ, empty, empty}, {empty, empty, empty, empty}}, 
+   {{empty, empty, empty, empty}, {minoZ, empty, empty, empty}, {minoZ, minoZ, empty, empty}, {empty, minoZ, empty, empty}}},
   
   // mino L
-  {{{empty, empty, empty, empty}, {minoL, empty, empty, empty}, {minoL, minoL, minoL, empty}, {empty, empty, empty, empty}},
-   {{empty, empty, empty, empty}, {minoL, minoL, empty ,empty}, {empty, minoL, empty, empty}, {empty, minoL, empty, empty}},
-   {{empty, empty, empty, empty}, {empty, empty, empty, empty}, {minoL, minoL, minoL, empty}, {minoL, empty, empty ,empty}},
-   {{empty, empty, empty, empty}, {minoL, empty, empty, empty}, {minoL, empty, empty, empty}, {minoL, minoL, empty, empty}}},
+  {{{empty, empty, empty, empty}, {minoL, empty, empty, empty}, {minoL, minoL, minoL, empty}, {empty, empty, empty, empty}}, 
+   {{empty, empty, empty, empty}, {empty, minoL, empty, empty}, {empty, minoL, empty, empty}, {minoL, minoL, empty, empty}}, 
+   {{empty, empty, empty, empty}, {empty, empty, empty, empty}, {minoL, minoL, minoL, empty}, {empty, empty, minoL, empty}}, 
+   {{empty, empty, empty, empty}, {empty, minoL, minoL, empty}, {empty, minoL, empty, empty}, {empty, minoL, empty, empty}}}, 
 
   // mino O
   {{{empty, empty, empty, empty}, {empty, minoO, minoO, empty}, {empty, minoO, minoO, empty}, {empty, empty, empty, empty}},
@@ -118,10 +118,10 @@ Block blocks[7][4][4][4] = {      // 7가지 모양(blockType), 4가지 방향(b
    {{empty, empty, empty, empty}, {empty, minoO, minoO ,empty}, {empty, minoO ,minoO ,empty}, {empty, empty ,empty ,empty}}},
 
   // mino S
-  {{{empty, empty, empty, empty}, {empty, minoS, minoS, empty}, {minoS, minoS, empty, empty}, {empty, empty, empty, empty}}, 
-   {{empty, empty, empty, empty}, {minoS, empty, empty, empty}, {minoS, minoS, empty, empty}, {empty, minoS, empty, empty}}, 
-   {{empty, empty, empty, empty}, {empty, minoS, minoS, empty}, {minoS, minoS, empty, empty}, {empty, empty, empty, empty}}, 
-   {{empty, empty, empty, empty}, {minoS, empty, empty, empty}, {minoS, minoS, empty, empty}, {empty, minoS, empty, empty}}},
+  {{{empty, empty, empty, empty}, {minoS, minoS, empty, empty}, {empty, minoS, minoS, empty}, {empty, empty, empty, empty}},
+   {{empty, empty, empty, empty}, {empty, empty, minoS, empty}, {empty, minoS, minoS, empty}, {empty, minoS, empty, empty}},
+   {{empty, empty, empty, empty}, {minoS, minoS, empty, empty}, {empty, minoS, minoS, empty}, {empty, empty, empty, empty}},
+   {{empty, empty, empty, empty}, {empty, empty, minoS, empty}, {empty, minoS, minoS, empty}, {empty, minoS, empty, empty}}},
 
   // mino I
   {{{empty, empty, empty, empty}, {empty, empty, empty, empty}, {minoI, minoI, minoI, minoI}, {empty, empty, empty, empty}}, 
@@ -130,10 +130,10 @@ Block blocks[7][4][4][4] = {      // 7가지 모양(blockType), 4가지 방향(b
    {{empty, minoI, empty, empty}, {empty, minoI, empty, empty}, {empty, minoI, empty, empty}, {empty, minoI, empty, empty}}}, 
 
   // mino J
-  {{{empty, empty, empty, empty}, {minoJ, empty, empty, empty}, {minoJ, minoJ, minoJ, empty}, {empty, empty, empty, empty}}, 
-   {{empty, empty, empty, empty}, {empty, minoJ, empty, empty}, {empty, minoJ, empty, empty}, {minoJ, minoJ, empty, empty}}, 
-   {{empty, empty, empty, empty}, {empty, empty, empty, empty}, {minoJ, minoJ, minoJ, empty}, {empty, empty, minoJ, empty}}, 
-   {{empty, empty, empty, empty}, {empty, minoJ, minoJ, empty}, {empty, minoJ, empty, empty}, {empty, minoJ, empty, empty}}}, 
+  {{{empty, empty, empty, empty}, {empty, empty, minoJ, empty}, {minoJ, minoJ, minoJ, empty}, {empty, empty, empty, empty}}, 
+   {{empty, empty, empty, empty}, {minoJ, minoJ, empty, empty}, {empty, minoJ, empty, empty}, {empty, minoJ, empty, empty}}, 
+   {{empty, empty, empty, empty}, {empty, empty, empty, empty}, {minoJ, minoJ, minoJ, empty}, {minoJ, empty, empty, empty}}, 
+   {{empty, empty, empty, empty}, {empty, minoJ, empty, empty}, {empty, minoJ, empty, empty}, {empty, minoJ, minoJ, empty}}},
 
   // mino T
   {{{empty, empty, empty, empty}, {empty, minoT, empty, empty}, {minoT, minoT, minoT, empty}, {empty, empty, empty, empty}}, 
@@ -147,7 +147,10 @@ void setup() {
   pinMode(joyStickSW, INPUT);     // pin mode 설정
   digitalWrite(joyStickSW, HIGH); // pull up 설정
   Serial.begin(9600);
-  blockType = 3;
+  randomSeed(analogRead(A7) % 23);
+  random(7);
+  blockType = (random(7) + random(7) + random(7)) / 3;
+  blockState = (random(4) + random(4) + random(4)) / 3;
   for(int i = 0 ; i < 4 ; ++i) {
     for(int j = 0 ; j < 4 ; ++j) {
       if(blocks[blockType][blockState][i][j] != empty) {
@@ -189,7 +192,6 @@ int joyStick() {  // 조이스틱의 입력값을 반환
   return 0;
 }
 void moveBlock(int key) { // 조이스틱의 입력값을 받아서 블럭을 옮겨줌
-  Serial.print(blockType);
   int x = 0, y = 0;
   if(checkCrush(key)) {
     switch(key) {
