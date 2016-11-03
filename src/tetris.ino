@@ -24,15 +24,18 @@ RGBmatrixPanel matrix(A, B, C, CLK, LAT, OE, false);
 #define joyStickSW  2
 // 조이스틱 사용을 위한 정의
 
-#define MAIN_X 32
-#define MAIN_Y 16   // 게임판 크기
+#define MAIN_X 32   // X = y좌표
+#define MAIN_Y 16   // Y = x좌표, 게임판 크기
 
-int level = 0;              // 레벨에 따른 속도 조절
-uint8_t bx = 15, by = 7;    // 테스트를 위해 초기값 설정해놓음 추후 reset 할것!
 int joyStick();             // joyStick 입력값을 반환하는 함수
 void moveBlock(int key);    // joyStick 입력값을 받아서 블럭을 옮겨주는 함수
 bool checkCrush(int key);   // 충돌을 검사해주는 함수, 충돌인경우 false, 정상인경우 true
 void drawMain();            // 게임판을 출력해주는 함수
+
+int level = 0;              // 레벨에 따른 속도 조절
+int blockType;              // 현재 블록의 종류
+int blockState;             // 현재 블록의 방향 상태
+uint8_t bx = 15, by = 7;    // 테스트를 위해 초기값 설정해놓음 추후 reset 할것!
 
 class Block {
   private :
@@ -58,7 +61,7 @@ class Block {
   void setLedOff() {
     setBlock(0, 0, 0, false);
   } // led 소등(실제로 꺼지지는 않고 onOff 값만 바꿔줌, 상태가 바뀌면 drawMain(ledTurn)에서 꺼줌)
-  
+
   void ledTurn(int x, int y) {
     if(onOff) matrix.drawPixel(x, y, matrix.Color333(r, g, b));
     else matrix.drawPixel(x, y, matrix.Color333(0, 0, 0));
@@ -85,7 +88,7 @@ Block mainOrg[MAIN_X][MAIN_Y];  // 게임판의 상태를 저장하는 배열
 Block mainCpy[MAIN_X][MAIN_Y];  // 게임판의 상태가 바뀌었는지 확인하기 위한 배열
 
 // 테트리미노를 설정할 때 쓰이는 블록
-Block empty(0, 0, 0, false);  // empty
+Block empty(0, 0, 0, false);// empty
 Block minoZ(2, 0, 0, true); // Z red
 Block minoL(2, 1, 0, true); // L orange
 Block minoO(2, 2, 0, true); // O yellow
@@ -94,8 +97,8 @@ Block minoI(0, 2, 2, true); // I sky
 Block minoJ(0, 0, 2, true); // J blue
 Block minoT(2, 0, 2, true); // T purple
 
-int blockType;
-int blockState;
+// 게임판의 벽을 설정할 때 쓰이는 블록
+Block wall(4, 2, 1, true);  // wall
 
 // 테트리미노를 나타내기 위한 배열
 Block blocks[7][4][4][4] = {      // 7가지 모양(blockType), 4가지 방향(blockState), 4 * 4 배열
@@ -142,15 +145,22 @@ Block blocks[7][4][4][4] = {      // 7가지 모양(blockType), 4가지 방향(b
    {{empty, empty, empty, empty}, {empty, minoT, empty, empty}, {minoT, minoT, empty, empty}, {empty, minoT, empty, empty}}}
 };
 
+
+
+
 void setup() {
   matrix.begin(); // dotMatrix 사용 시작
   pinMode(joyStickSW, INPUT);     // pin mode 설정
   digitalWrite(joyStickSW, HIGH); // pull up 설정
   Serial.begin(9600);
-  randomSeed(analogRead(A7) % 23);
+  randomSeed(analogRead(A7));
   random(100);
   blockType = random(10000) % 7;
   blockState = random(10000) % 4;
+  /*for(int i = 0 ; i < 20 ; ++i) {
+    mainOrg[i][2] = wall;
+    
+  }*/
   for(int i = 0 ; i < 4 ; ++i) {
     for(int j = 0 ; j < 4 ; ++j) {
       if(blocks[blockType][blockState][i][j] != empty) {
@@ -169,6 +179,9 @@ void loop() {
     delay(100 - level * 5);
   }
 }
+
+
+
 
 int joyStick() {  // 조이스틱의 입력값을 반환
   int x = analogRead(joyStickX);
@@ -192,21 +205,22 @@ int joyStick() {  // 조이스틱의 입력값을 반환
   return 0;
 }
 void moveBlock(int key) { // 조이스틱의 입력값을 받아서 블럭을 옮겨줌
-  int x = 0, y = 0;
-  if(checkCrush(key)) {
+  int x = 0, y = 0, rotation = 0;
+  if(key) {
     switch(key) {
-      case UP :         x++;        break;
-      case UP_LEFT :    x++, y--;   break;
+      case UP :         ;        break;
+      case UP_LEFT :    ;   break;
       case LEFT :       y--;        break;
       case DOWN_LEFT :  x--, y--;   break;
       case DOWN :       x--;        break;
       case DOWN_RIGTH : x--, y++;   break;
       case RIGHT :      y++;        break;
-      case UP_RIGTH :   x++, y++;   break;
+      case UP_RIGTH :   ;   break;
       case ON :
+      // hard drop
       break;     
     }
-    if(key != ON && key != 0) {
+    if(key != ON && checkCrush(x, y, rotation)) {
       for(int i = 0 ; i < 4 ; ++i)
         for(int j = 0 ; j < 4 ; ++j)
           if(blocks[blockType][blockState][i][j] != empty)
@@ -219,7 +233,12 @@ void moveBlock(int key) { // 조이스틱의 입력값을 받아서 블럭을 �
     }
   }
 }
-bool checkCrush(int key) {  // 벽면, 블록간의 충돌 검사
+bool checkCrush(int x, int y, int rotation) {  // 벽면, 블록간의 충돌 검사
+  for(int i = 0 ; i < 4 ; ++i)
+    for(int j = 0 ; j < 4 ; ++j)
+      if(blocks[blockType][blockState][i][j] != empty)
+        if(!((3 <= by + y + j && by + y + j <= 12) && (0 <= bx + x + i && bx + x + i <= 19)))
+          return false;
   return true;
 }
 void drawMain() { // 게임판을 그려줌
