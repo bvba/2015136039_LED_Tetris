@@ -65,14 +65,14 @@ void moveBlock(int key) { // 조이스틱의 입력값을 받아서 블럭을 �
   int x = 0, y = 0, rotation = 0;
   if(key) {
     switch(key) {
-      case UP :         ;        break;
-      case UP_LEFT :    ;   break;
+      case UP :         rotation++; break;
+      case UP_LEFT :    rotation++; break;
       case LEFT :       y--;        break;
       case DOWN_LEFT :  x--, y--;   break;
       case DOWN :       x--;        break;
       case DOWN_RIGTH : x--, y++;   break;
       case RIGHT :      y++;        break;
-      case UP_RIGTH :   ;   break;
+      case UP_RIGTH :   rotation--; break;
       case ON :
       // hard drop
       break;     
@@ -84,16 +84,17 @@ void moveBlock(int key) { // 조이스틱의 입력값을 받아서 블럭을 �
             mainOrg[bx + i][by + j].setLedOff();
       for(int i = 0 ; i < 4 ; ++i)
         for(int j = 0 ; j < 4 ; ++j)
-          if(blocks[blockType][blockState][i][j] != empty)
-            mainOrg[bx + x + i][by + y + j] = blocks[blockType][blockState][i][j];
-      bx += x, by += y;
+          if(blocks[blockType][(blockState + rotation + 4) % 4][i][j] != empty)
+            mainOrg[(bx + x + i + 32) % 32][by + y + j] = blocks[blockType][(blockState + rotation + 4) % 4][i][j];
+      bx = (bx + x + 32) % 32, by += y;
+      blockState = (blockState + rotation + 4) % 4;
     }
   }
 }
 bool checkCrush(int x, int y, int rotation) {  // 벽면, 블록간의 충돌 검사
   for(int i = 0 ; i < 4 ; ++i)
     for(int j = 0 ; j < 4 ; ++j)
-      if(blocks[blockType][blockState][i][j] != empty)
+      if(blocks[blockType][(blockState + rotation + 4) % 4][i][j] != empty)
         if(!((3 <= by + y + j && by + y + j <= 12) && (0 <= bx + x + i && bx + x + i <= 19)))
           return false;
   return true;
