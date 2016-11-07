@@ -1,14 +1,6 @@
-#include <JoyStick.h>       // 조이스틱 라이브러리
+#include <JoyStick.h>
+#include <Block.h>
 
-#include <Adafruit_GFX.h>   // Core graphics library
-#include <RGBmatrixPanel.h> // Hardware-specific library
-
-#define CLK 11  // MUST be on PORTB! (Use pin 11 on Mega)
-#define LAT A3
-#define OE  9
-#define A   A0
-#define B   A1
-#define C   A2
 RGBmatrixPanel matrix(A, B, C, CLK, LAT, OE, false);
 // RGBmatrix library 사용을 위한 정의
 
@@ -24,113 +16,9 @@ int blockType;              // 현재 블록의 종류
 int blockState;             // 현재 블록의 방향 상태
 uint8_t bx = 15, by = 7;    // 테스트를 위해 초기값 설정해놓음 추후 reset 할것!
 
-class Block {
-  private :
-  uint8_t r, g, b;  // 색상, r = g = b 일 경우 흰색, 숫자가 커지면 밝아진다
-  bool onOff;       // led의 on, off 상태를 나타냄
-
-  public :
-  Block() {
-    setBlock(0, 0, 0, false);
-  } // default 생성자
-
-  Block(uint8_t r, uint8_t g, uint8_t b, bool onOff) {
-    setBlock(r, g, b, onOff);
-  } // 생성자
-  
-  void setBlock(uint8_t r1, uint8_t g1, uint8_t b1, bool state) {
-    r = r1;
-    g = g1;
-    b = b1;
-    onOff = state;
-  } // Block 필드값 설정 및 생성에 쓰임
-
-  void setLedOff() {
-    setBlock(0, 0, 0, false);
-  } // led 소등(실제로 꺼지지는 않고 onOff 값만 바꿔줌, 상태가 바뀌면 drawMain(ledTurn)에서 꺼줌)
-
-  void ledTurn(int x, int y) {
-    if(onOff) matrix.drawPixel(x, y, matrix.Color333(r, g, b));
-    else matrix.drawPixel(x, y, matrix.Color333(0, 0, 0));
-  } // (외부에서 조절)(Block의 onOff 값이 변경되었다면) led를 끄거나 켜줌
-
-  bool operator == (const Block & p) {
-    if(r == p.r && g == p.g && b == p.g && onOff == p.onOff) return true;
-    else return false;
-  } // == operator overloading
-
-  bool operator != (const Block & p) {
-    if(r != p.r || g != p.g || b != p.g || onOff != p.onOff) return true;
-    else return false;
-  } // != operator overloading
-
-  Block& operator = (const Block & p) {
-    r = p.r, g = p.g, b = p.b;
-    onOff = p.onOff;
-    return *this;
-  } // = operator overloading
-};
-
 Block mainOrg[MAIN_X][MAIN_Y];  // 게임판의 상태를 저장하는 배열
 Block mainCpy[MAIN_X][MAIN_Y];  // 게임판의 상태가 바뀌었는지 확인하기 위한 배열
 
-// 테트리미노를 설정할 때 쓰이는 블록
-Block empty(0, 0, 0, false);// empty
-Block minoZ(2, 0, 0, true); // Z red
-Block minoL(2, 1, 0, true); // L orange
-Block minoO(2, 2, 0, true); // O yellow
-Block minoS(0, 2, 0, true); // S green
-Block minoI(0, 2, 2, true); // I sky
-Block minoJ(0, 0, 2, true); // J blue
-Block minoT(2, 0, 2, true); // T purple
-
-// 게임판의 벽을 설정할 때 쓰이는 블록
-Block wall(4, 2, 1, true);  // wall
-
-// 테트리미노를 나타내기 위한 배열
-Block blocks[7][4][4][4] = {      // 7가지 모양(blockType), 4가지 방향(blockState), 4 * 4 배열
-  // mino Z
-  {{{empty, empty, empty, empty}, {empty, minoZ, minoZ, empty}, {minoZ, minoZ, empty, empty}, {empty, empty, empty, empty}}, 
-   {{empty, empty, empty, empty}, {minoZ, empty, empty, empty}, {minoZ, minoZ, empty, empty}, {empty, minoZ, empty, empty}}, 
-   {{empty, empty, empty, empty}, {empty, minoZ, minoZ, empty}, {minoZ, minoZ, empty, empty}, {empty, empty, empty, empty}}, 
-   {{empty, empty, empty, empty}, {minoZ, empty, empty, empty}, {minoZ, minoZ, empty, empty}, {empty, minoZ, empty, empty}}},
-  
-  // mino L
-  {{{empty, empty, empty, empty}, {minoL, empty, empty, empty}, {minoL, minoL, minoL, empty}, {empty, empty, empty, empty}}, 
-   {{empty, empty, empty, empty}, {empty, minoL, empty, empty}, {empty, minoL, empty, empty}, {minoL, minoL, empty, empty}}, 
-   {{empty, empty, empty, empty}, {empty, empty, empty, empty}, {minoL, minoL, minoL, empty}, {empty, empty, minoL, empty}}, 
-   {{empty, empty, empty, empty}, {empty, minoL, minoL, empty}, {empty, minoL, empty, empty}, {empty, minoL, empty, empty}}}, 
-
-  // mino O
-  {{{empty, empty, empty, empty}, {empty, minoO, minoO, empty}, {empty, minoO, minoO, empty}, {empty, empty, empty, empty}},
-   {{empty, empty, empty ,empty}, {empty, minoO, minoO, empty}, {empty, minoO, minoO, empty}, {empty, empty, empty ,empty}},
-   {{empty, empty ,empty ,empty}, {empty, minoO ,minoO ,empty}, {empty, minoO, minoO, empty}, {empty, empty ,empty ,empty}},
-   {{empty, empty, empty, empty}, {empty, minoO, minoO ,empty}, {empty, minoO ,minoO ,empty}, {empty, empty ,empty ,empty}}},
-
-  // mino S
-  {{{empty, empty, empty, empty}, {minoS, minoS, empty, empty}, {empty, minoS, minoS, empty}, {empty, empty, empty, empty}},
-   {{empty, empty, empty, empty}, {empty, empty, minoS, empty}, {empty, minoS, minoS, empty}, {empty, minoS, empty, empty}},
-   {{empty, empty, empty, empty}, {minoS, minoS, empty, empty}, {empty, minoS, minoS, empty}, {empty, empty, empty, empty}},
-   {{empty, empty, empty, empty}, {empty, empty, minoS, empty}, {empty, minoS, minoS, empty}, {empty, minoS, empty, empty}}},
-
-  // mino I
-  {{{empty, empty, empty, empty}, {empty, empty, empty, empty}, {minoI, minoI, minoI, minoI}, {empty, empty, empty, empty}}, 
-   {{empty, minoI, empty, empty}, {empty, minoI, empty, empty}, {empty, minoI, empty, empty}, {empty, minoI, empty, empty}}, 
-   {{empty, empty, empty, empty}, {empty, empty, empty, empty}, {minoI, minoI, minoI, minoI}, {empty, empty, empty, empty}}, 
-   {{empty, minoI, empty, empty}, {empty, minoI, empty, empty}, {empty, minoI, empty, empty}, {empty, minoI, empty, empty}}}, 
-
-  // mino J
-  {{{empty, empty, empty, empty}, {empty, empty, minoJ, empty}, {minoJ, minoJ, minoJ, empty}, {empty, empty, empty, empty}}, 
-   {{empty, empty, empty, empty}, {minoJ, minoJ, empty, empty}, {empty, minoJ, empty, empty}, {empty, minoJ, empty, empty}}, 
-   {{empty, empty, empty, empty}, {empty, empty, empty, empty}, {minoJ, minoJ, minoJ, empty}, {minoJ, empty, empty, empty}}, 
-   {{empty, empty, empty, empty}, {empty, minoJ, empty, empty}, {empty, minoJ, empty, empty}, {empty, minoJ, minoJ, empty}}},
-
-  // mino T
-  {{{empty, empty, empty, empty}, {empty, minoT, empty, empty}, {minoT, minoT, minoT, empty}, {empty, empty, empty, empty}}, 
-   {{empty, empty, empty, empty}, {empty, minoT, empty, empty}, {empty, minoT, minoT, empty}, {empty, minoT, empty, empty}}, 
-   {{empty, empty, empty, empty}, {empty, empty, empty, empty}, {minoT, minoT, minoT, empty}, {empty, minoT, empty, empty}}, 
-   {{empty, empty, empty, empty}, {empty, minoT, empty, empty}, {minoT, minoT, empty, empty}, {empty, minoT, empty, empty}}}
-};
 
 
 
