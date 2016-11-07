@@ -1,23 +1,24 @@
 #include <JoyStick.h>
 #include <Block.h>
 
-RGBmatrixPanel matrix(A, B, C, CLK, LAT, OE, false);
-// RGBmatrix library 사용을 위한 정의
-
 #define MAIN_X 32   // X = y좌표
 #define MAIN_Y 16   // Y = x좌표, 게임판 크기
 
-void moveBlock(int key);    // joyStick 입력값을 받아서 블럭을 옮겨주는 함수
-bool checkCrush(int key);   // 충돌을 검사해주는 함수, 충돌인경우 false, 정상인경우 true
-void drawMain();            // 게임판을 출력해주는 함수
+RGBmatrixPanel matrix(A, B, C, CLK, LAT, OE, false);
+// RGBmatrix library 사용을 위한 정의
 
 int level = 0;              // 레벨에 따른 속도 조절
 int blockType;              // 현재 블록의 종류
 int blockState;             // 현재 블록의 방향 상태
 uint8_t bx = 15, by = 7;    // 테스트를 위해 초기값 설정해놓음 추후 reset 할것!
-
+extern Block empty, minoZ, minoL, minoO, minoS, minoI, minoJ, minoT, wall;
+extern Block blocks[7][4][4][4];
 Block mainOrg[MAIN_X][MAIN_Y];  // 게임판의 상태를 저장하는 배열
 Block mainCpy[MAIN_X][MAIN_Y];  // 게임판의 상태가 바뀌었는지 확인하기 위한 배열
+
+void moveBlock(int key);    // joyStick 입력값을 받아서 블럭을 옮겨주는 함수
+bool checkCrush(int key);   // 충돌을 검사해주는 함수, 충돌인경우 false, 정상인경우 true
+void drawMain();            // 게임판을 출력해주는 함수
 
 
 
