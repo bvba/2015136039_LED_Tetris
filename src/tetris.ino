@@ -1,3 +1,5 @@
+#include <JoyStick.h>       // 조이스틱 라이브러리
+
 #include <Adafruit_GFX.h>   // Core graphics library
 #include <RGBmatrixPanel.h> // Hardware-specific library
 
@@ -10,24 +12,9 @@
 RGBmatrixPanel matrix(A, B, C, CLK, LAT, OE, false);
 // RGBmatrix library 사용을 위한 정의
 
-#define UP          1
-#define UP_LEFT     2
-#define LEFT        3
-#define DOWN_LEFT   4
-#define DOWN        5
-#define DOWN_RIGTH  6
-#define RIGHT       7
-#define UP_RIGTH    8
-#define ON          9
-#define joyStickX   A4
-#define joyStickY   A5
-#define joyStickSW  2
-// 조이스틱 사용을 위한 정의
-
 #define MAIN_X 32   // X = y좌표
 #define MAIN_Y 16   // Y = x좌표, 게임판 크기
 
-int joyStick();             // joyStick 입력값을 반환하는 함수
 void moveBlock(int key);    // joyStick 입력값을 받아서 블럭을 옮겨주는 함수
 bool checkCrush(int key);   // 충돌을 검사해주는 함수, 충돌인경우 false, 정상인경우 true
 void drawMain();            // 게임판을 출력해주는 함수
@@ -157,10 +144,11 @@ void setup() {
   random(100);
   blockType = random(10000) % 7;
   blockState = random(10000) % 4;
-  /*for(int i = 0 ; i < 20 ; ++i) {
-    mainOrg[i][2] = wall;
-    
-  }*/
+  for(int i = 0 ; i < 20 ; ++i) {
+    mainCpy[i][13] = mainCpy[i][2] = mainOrg[i][13] = mainOrg[i][2] = wall;
+    mainOrg[i][2].ledTurn(i, 2);
+    mainOrg[i][13].ledTurn(i, 13);
+  }
   for(int i = 0 ; i < 4 ; ++i) {
     for(int j = 0 ; j < 4 ; ++j) {
       if(blocks[blockType][blockState][i][j] != empty) {
@@ -183,27 +171,7 @@ void loop() {
 
 
 
-int joyStick() {  // 조이스틱의 입력값을 반환
-  int x = analogRead(joyStickX);
-  int y = analogRead(joyStickY);
-  int sw = digitalRead(joyStickSW);
-  if(x <= 200) {
-    if(y <= 200)        return UP_LEFT;
-    else if(y >= 800)   return DOWN_LEFT;
-    else                return LEFT;
-  }
-  else if(x >= 800) {
-    if(y <= 200)        return UP_RIGTH;
-    else if(y >= 800)   return DOWN_RIGTH;\
-    else                return RIGHT;
-  }
-  else {
-    if(y <= 200)        return UP;
-    else if(y >= 800)   return DOWN;
-  }
-  if(sw == 0)           return ON;
-  return 0;
-}
+
 void moveBlock(int key) { // 조이스틱의 입력값을 받아서 블럭을 옮겨줌
   int x = 0, y = 0, rotation = 0;
   if(key) {
