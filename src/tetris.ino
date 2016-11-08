@@ -16,9 +16,11 @@ extern Block blocks[7][4][4][4];
 Block mainOrg[MAIN_X][MAIN_Y];  // 게임판의 상태를 저장하는 배열
 Block mainCpy[MAIN_X][MAIN_Y];  // 게임판의 상태가 바뀌었는지 확인하기 위한 배열
 
-void moveBlock(int key);    // joyStick 입력값을 받아서 블럭을 옮겨주는 함수
-bool checkCrush(int key);   // 충돌을 검사해주는 함수, 충돌인경우 false, 정상인경우 true
-void drawMain();            // 게임판을 출력해주는 함수
+void moveBlock(int key);        // joyStick 입력값을 받아서 블럭을 옮겨주는 함수
+void setBlockOff();             // 블럭을 empty로 설정(실제로 지우지는 않음)
+void setBlockOn(int x, int y, int rotation);  // 블럭을 on상태로 설정(실제로 켜주지는 않음)
+bool checkCrush(int key);       // 충돌을 검사해주는 함수, 충돌인경우 false, 정상인경우 true
+void drawMain();                // 게임판을 출력해주는 함수
 
 
 
@@ -78,25 +80,35 @@ void moveBlock(int key) { // 조이스틱의 입력값을 받아서 블럭을 �
       break;     
     }
     if(key != ON && checkCrush(x, y, rotation)) {
-      for(int i = 0 ; i < 4 ; ++i)
-        for(int j = 0 ; j < 4 ; ++j)
-          if(blocks[blockType][blockState][i][j] != empty)
-            mainOrg[bx + i][by + j].setLedOff();
-      for(int i = 0 ; i < 4 ; ++i)
-        for(int j = 0 ; j < 4 ; ++j)
-          if(blocks[blockType][(blockState + rotation + 4) % 4][i][j] != empty)
-            mainOrg[(bx + x + i + 32) % 32][by + y + j] = blocks[blockType][(blockState + rotation + 4) % 4][i][j];
-      bx = (bx + x + 32) % 32, by += y;
+      setBlockOff();
+      setBlockOn(x, y, rotation);
+      bx = (bx + x > 0 ? bx + x : 0), by += y;
       blockState = (blockState + rotation + 4) % 4;
     }
   }
 }
-bool checkCrush(int x, int y, int rotation) {  // 벽면, 블록간의 충돌 검사
+void setBlockOff() {
   for(int i = 0 ; i < 4 ; ++i)
     for(int j = 0 ; j < 4 ; ++j)
+      if(blocks[blockType][blockState][i][j] != empty)
+        mainOrg[bx + i][by + j].setLedOff();
+}
+void setBlockOn(int x, int y, int rotation) {
+  for(int i = 0 ; i < 4 ; ++i)
+        for(int j = 0 ; j < 4 ; ++j)
+          if(blocks[blockType][(blockState + rotation + 4) % 4][i][j] != empty)
+            mainOrg[bx + x + i][by + y + j] = blocks[blockType][(blockState + rotation + 4) % 4][i][j];
+}
+bool checkCrush(int x, int y, int rotation) {  // 벽면, 블록간의 충돌 검사
+  int tx, ty;
+  for(int i = 0 ; i < 4 ; ++i)
+    for(int j = 0 ; j < 4 ; ++j) {
+      tx = (bx + x + i + 32) % 32;
+      ty = (by + y + j);
       if(blocks[blockType][(blockState + rotation + 4) % 4][i][j] != empty)
-        if(!((3 <= by + y + j && by + y + j <= 12) && (0 <= bx + x + i && bx + x + i <= 19)))
+        if(!((3 <= ty && ty <= 12) && (0 <= tx && tx <= 19)))
           return false;
+    }
   return true;
 }
 void drawMain() { // 게임판을 그려줌
