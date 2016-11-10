@@ -4,6 +4,13 @@
 #include "Arduino.h"
 #include "Extern.h"
 
+#define CLK 11  // MUST be on PORTB! (Use pin 11 on Mega)
+#define LAT A3
+#define OE  9
+#define A   A0
+#define B   A1
+#define C   A2
+
 class Block {
 public :
 	Block();							// default 생성자
@@ -16,7 +23,7 @@ public :
 	bool operator == (const Block & p);	// == operator overloading
 	bool operator != (const Block & p);	// != operator overloading
 	Block& operator = (const Block & p);	// = operator overloading
-private :
+public :
 	uint8_t r, g, b;  // 색상, r = g = b 일 경우 흰색, 숫자가 커지면 밝아진다
 	bool onOff;       // led의 on, off 상태를 나타냄
 };
