@@ -1,7 +1,9 @@
 #include "Arduino.h"
 #include "Block.h"
 
-// ≈◊∆Æ∏ÆπÃ≥Î∏¶ º≥¡§«“ ∂ß æ≤¿Ã¥¬ ∫Ì∑œ
+// ÌÖåÌä∏Î¶¨ÎØ∏ÎÖ∏Î•º ÏÑ§Ï†ïÌï† Îïå Ïì∞Ïù¥Îäî Î∏îÎ°ù
+Block empty3[3];
+Block empty4[4];
 Block empty(0, 0, 0, false);// empty
 Block minoZ(2, 0, 0, true); // Z red
 Block minoL(2, 1, 0, true); // L orange
@@ -11,84 +13,77 @@ Block minoI(0, 2, 2, true); // I sky
 Block minoJ(0, 0, 2, true); // J blue
 Block minoT(2, 0, 2, true); // T purple
 
-// ∞‘¿”∆«¿« ∫Æ¿ª º≥¡§«“ ∂ß æ≤¿Ã¥¬ ∫Ì∑œ
+// Í≤åÏûÑÌåêÏùò Î≤ΩÏùÑ ÏÑ§Ï†ïÌï† Îïå Ïì∞Ïù¥Îäî Î∏îÎ°ù
 Block wall(4, 2, 1, true);  // wall
-Block empty4[4];
 
-// ≈◊∆Æ∏ÆπÃ≥Î∏¶ ≥™≈∏≥ª±‚ ¿ß«— πËø≠
-Block blocks[7][4][4][4] = {      // 7∞°¡ˆ ∏æÁ(blockType), 4∞°¡ˆ πÊ«‚(blockState), 4 * 4 πËø≠
-  // mino Z
-  {{empty4, {empty, minoZ, minoZ, empty}, {minoZ, minoZ, empty, empty}, empty4}, 
-   {empty4, {minoZ, empty, empty, empty}, {minoZ, minoZ, empty, empty}, {empty, minoZ, empty, empty}}, 
-   {empty4, {empty, minoZ, minoZ, empty}, {minoZ, minoZ, empty, empty}, empty4}, 
-   {empty4, {minoZ, empty, empty, empty}, {minoZ, minoZ, empty, empty}, {empty, minoZ, empty, empty}}},
-  
-  // mino L
-  {{empty4, {minoL, empty, empty, empty}, {minoL, minoL, minoL, empty}, empty4}, 
-   {empty4, {empty, minoL, empty, empty}, {empty, minoL, empty, empty}, {minoL, minoL, empty, empty}}, 
-   {empty4, empty4, {minoL, minoL, minoL, empty}, {empty, empty, minoL, empty}}, 
-   {empty4, {empty, minoL, minoL, empty}, {empty, minoL, empty, empty}, {empty, minoL, empty, empty}}}, 
+// ÌÖåÌä∏Î¶¨ÎØ∏ÎÖ∏Î•º ÎÇòÌÉÄÎÇ¥Í∏∞ ÏúÑÌïú Î∞∞Ïó¥
+Block blocks[6][4][3][3] = {      // 6Í∞ÄÏßÄ Î™®Ïñë(blockType), 4Í∞ÄÏßÄ Î∞©Ìñ•(blockState), 3 * 3 Î∞∞Ïó¥
+	// mino Z
+	{{{empty, minoZ, empty}, {empty, minoZ, minoZ}, {empty, empty, minoZ}},
+	{{empty, minoZ, minoZ}, {minoZ, minoZ, empty}, empty3},
+	{{minoZ, empty, empty}, {minoZ, minoZ, empty}, {empty, minoZ, empty}},
+	{empty3, {empty, minoZ, minoZ}, {minoZ, minoZ, empty}}},
 
-  // mino O
-  {{empty4, {empty, minoO, minoO, empty}, {empty, minoO, minoO, empty}, empty4},
-   {{empty, empty, empty ,empty}, {empty, minoO, minoO, empty}, {empty, minoO, minoO, empty}, {empty, empty, empty ,empty}},
-   {{empty, empty ,empty ,empty}, {empty, minoO ,minoO ,empty}, {empty, minoO, minoO, empty}, {empty, empty ,empty ,empty}},
-   {empty4, {empty, minoO, minoO ,empty}, {empty, minoO ,minoO ,empty}, {empty, empty ,empty ,empty}}},
+	// mino L
+	{{{minoL, empty, empty}, {minoL, minoL, minoL}, {empty, empty, empty}},
+	{{empty, minoL, empty}, {empty, minoL, empty}, {minoL, minoL, empty}},
+	{empty3, {minoL, minoL, minoL}, {empty, empty, minoL}},
+	{{empty, minoL, minoL}, {empty, minoL, empty}, {empty, minoL, empty}}},
 
-  // mino S
-  {{empty4, {minoS, minoS, empty, empty}, {empty, minoS, minoS, empty}, empty4},
-   {empty4, {empty, empty, minoS, empty}, {empty, minoS, minoS, empty}, {empty, minoS, empty, empty}},
-   {empty4, {minoS, minoS, empty, empty}, {empty, minoS, minoS, empty}, empty4},
-   {empty4, {empty, empty, minoS, empty}, {empty, minoS, minoS, empty}, {empty, minoS, empty, empty}}},
+	// mino O
+	{{empty3, {minoO, minoO, empty}, {minoO, minoO, empty}},
+	{empty3, {minoO, minoO, empty}, {minoO, minoO, empty}},
+	{empty3, {minoO, minoO, empty}, {minoO, minoO, empty}},
+	{empty3, {minoO, minoO, empty}, {minoO, minoO, empty}}},
 
-  // mino I
-  {{empty4, empty4, {minoI, minoI, minoI, minoI}, empty4}, 
-   {{empty, minoI, empty, empty}, {empty, minoI, empty, empty}, {empty, minoI, empty, empty}, {empty, minoI, empty, empty}}, 
-   {empty4, empty4, {minoI, minoI, minoI, minoI}, empty4}, 
-   {{empty, minoI, empty, empty}, {empty, minoI, empty, empty}, {empty, minoI, empty, empty}, {empty, minoI, empty, empty}}}, 
+	// mino S
+	{{empty3, {minoS, minoS, empty}, {empty, minoS, minoS}},
+	{{empty, minoS, empty}, {minoS, minoS, empty}, {minoS, empty, empty}},
+	{{minoS, minoS, empty}, {empty, minoS, minoS}, empty3},
+	{{empty, empty, minoS}, {empty, minoS, minoS}, {empty, minoS, empty}}},
 
-  // mino J
-  {{empty4, {empty, empty, minoJ, empty}, {minoJ, minoJ, minoJ, empty}, empty4}, 
-   {empty4, {minoJ, minoJ, empty, empty}, {empty, minoJ, empty, empty}, {empty, minoJ, empty, empty}}, 
-   {empty4, empty4, {minoJ, minoJ, minoJ, empty}, {minoJ, empty, empty, empty}}, 
-   {empty4, {empty, minoJ, empty, empty}, {empty, minoJ, empty, empty}, {empty, minoJ, minoJ, empty}}},
+	// mino J
+	{{{empty, empty, minoJ}, {minoJ, minoJ, minoJ}, empty3},
+	{{minoJ, minoJ, empty}, {empty, minoJ, empty}, {empty, minoJ, empty}},
+	{empty3, {minoJ, minoJ, minoJ}, {minoJ, empty, empty}},
+	{{empty, minoJ, empty}, {empty, minoJ, empty}, {empty, minoJ, minoJ}}},
 
-  // mino T
-  {{empty4, {empty, minoT, empty, empty}, {minoT, minoT, minoT, empty}, empty4}, 
-   {empty4, {empty, minoT, empty, empty}, {empty, minoT, minoT, empty}, {empty, minoT, empty, empty}}, 
-   {empty4, empty4, {minoT, minoT, minoT, empty}, {empty, minoT, empty, empty}}, 
-   {empty4, {empty, minoT, empty, empty}, {minoT, minoT, empty, empty}, {empty, minoT, empty, empty}}}
-};
+	// mino T
+	{{{empty, minoT, empty}, {minoT, minoT, minoT}, {empty, empty, empty}},
+	{{empty, minoT, empty}, {empty, minoT, minoT}, {empty, minoT, empty}},
+	{empty3, {minoT, minoT, minoT}, {empty, minoT, empty}},
+	{{empty, minoT, empty}, {minoT, minoT, empty}, {empty, minoT, empty}}}
+	};
 
-Block::Block() {
-	setBlock(0, 0, 0, false);
-}	// default ª˝º∫¿⁄
-Block::Block(uint8_t r, uint8_t g, uint8_t b, bool onOff) {
-	setBlock(r, g, b, onOff);
-}	// ª˝º∫¿⁄
-void Block::setBlock(uint8_t r1, uint8_t g1, uint8_t b1, bool state) {
-	r = r1;
-	g = g1;
-	b = b1;
-	onOff = state;
-}	// Block « µÂ∞™ º≥¡§ π◊ ª˝º∫ø° æ≤¿”
-void Block::setLedOff() {
-	setBlock(0, 0, 0, false);
-}	// led º“µÓ(Ω«¡¶∑Œ ≤®¡ˆ¡ˆ¥¬ æ ∞Ì onOff ∞™∏∏ πŸ≤„¡‹, ªÛ≈¬∞° πŸ≤Ó∏È drawMain(ledTurn)ø°º≠ ≤®¡‹)
-void Block::ledTurn(int x, int y) {
-	if(onOff) matrix.drawPixel(x, y, matrix.Color333(r, g, b));
-    else matrix.drawPixel(x, y, matrix.Color333(0, 0, 0));
-}	// (ø‹∫Œø°º≠ ¡∂¿˝)(Block¿« onOff ∞™¿Ã ∫Ø∞Êµ«æ˙¥Ÿ∏È) led∏¶ ≤Ù∞≈≥™ ƒ—¡‹
-bool Block::operator == (const Block & p) {
-	if(r == p.r && g == p.g && b == p.g && onOff == p.onOff) return true;
-    else return false;
-}	// == operator overloading
-bool Block::operator != (const Block & p) {
-	if(r != p.r || g != p.g || b != p.g || onOff != p.onOff) return true;
-    else return false;
-}	// != operator overloading
-Block& Block::operator = (const Block & p) {
-	r = p.r, g = p.g, b = p.b;
-    onOff = p.onOff;
-    return *this;
-}	// = operator overloading
+	Block::Block() {
+		setBlock(0, 0, 0, false);
+	}	// default ÏÉùÏÑ±Ïûê
+	Block::Block(uint8_t r, uint8_t g, uint8_t b, bool onOff) {
+		setBlock(r, g, b, onOff);
+	}	// ÏÉùÏÑ±Ïûê
+	void Block::setBlock(uint8_t r1, uint8_t g1, uint8_t b1, bool state) {
+		r = r1;
+		g = g1;
+		b = b1;
+		onOff = state;
+	}	// Block ÌïÑÎìúÍ∞í ÏÑ§Ï†ï Î∞è ÏÉùÏÑ±Ïóê Ïì∞ÏûÑ
+	void Block::setLedOff() {
+		setBlock(0, 0, 0, false);
+	}	// led ÏÜåÎì±(Ïã§Ï†úÎ°ú Í∫ºÏßÄÏßÄÎäî ÏïäÍ≥† onOff Í∞íÎßå Î∞îÍøîÏ§å, ÏÉÅÌÉúÍ∞Ä Î∞îÎÄåÎ©¥ drawMain(ledTurn)ÏóêÏÑú Í∫ºÏ§å)
+	void Block::ledTurn(int x, int y) {
+		if(onOff) matrix.drawPixel(x, y, matrix.Color333(r, g, b));
+		else matrix.drawPixel(x, y, matrix.Color333(0, 0, 0));
+	}	// (Ïô∏Î∂ÄÏóêÏÑú Ï°∞Ï†à)(BlockÏùò onOff Í∞íÏù¥ Î≥ÄÍ≤ΩÎêòÏóàÎã§Î©¥) ledÎ•º ÎÅÑÍ±∞ÎÇò ÏºúÏ§å
+	bool Block::operator == (const Block & p) {
+		if(r == p.r && g == p.g && b == p.g && onOff == p.onOff) return true;
+		else return false;
+	}	// == operator overloading
+	bool Block::operator != (const Block & p) {
+		if(r != p.r || g != p.g || b != p.g || onOff != p.onOff) return true;
+		else return false;
+	}	// != operator overloading
+	Block& Block::operator = (const Block & p) {
+		r = p.r, g = p.g, b = p.b;
+		onOff = p.onOff;
+		return *this;
+	}	// = operator overloading
