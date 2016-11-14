@@ -12,16 +12,13 @@ int blockType;              // 현재 블록의 종류
 int blockState;             // 현재 블록의 방향 상태
 uint8_t bx = 15, by = 7;    // 테스트를 위해 초기값 설정해놓음 추후 reset 할것!
 extern Block empty, minoZ, minoL, minoO, minoS, minoI, minoJ, minoT, wall;
-extern Block blocks[7][4][4][4];
-extern Block empty4;
+extern Block blocks[6][4][3][3];
 Block mainOrg[MAIN_X][MAIN_Y];  // 게임판의 상태를 저장하는 배열
 Block mainCpy[MAIN_X][MAIN_Y];  // 게임판의 상태가 바뀌었는지 확인하기 위한 배열
 
-void moveBlock(int key);        // joyStick 입력값을 받아서 블럭을 옮겨주는 함수
-void setBlockOff();             // 블럭을 empty로 설정(실제로 지우지는 않음)
-void setBlockOn(int x, int y, int rotation);  // 블럭을 on상태로 설정(실제로 켜주지는 않음)
-bool checkCrush(int key);       // 충돌을 검사해주는 함수, 충돌인경우 false, 정상인경우 true
-void drawMain();                // 게임판을 출력해주는 함수
+void moveBlock(int key);    // joyStick 입력값을 받아서 블럭을 옮겨주는 함수
+bool checkCrush(int key);   // 충돌을 검사해주는 함수, 충돌인경우 false, 정상인경우 true
+void drawMain();            // 게임판을 출력해주는 함수
 
 
 
@@ -34,15 +31,22 @@ void setup() {
   Serial.begin(9600);
   randomSeed(analogRead(A7));
   random(100);
-  blockType = random(10000) % 7;
+  blockType = random(100000) % 6;
   blockState = random(10000) % 4;
-  
-  for(int i = 0 ; i < 20 ; ++i)
-    mainOrg[i][13] = mainOrg[i][2] = wall;
-  setBlockOn(0, 0, 0);
-  for(int i = 0 ; i < MAIN_X ; ++i)
-    for(int j = 0 ; j < MAIN_Y ; ++j)
-      mainCpy[i][j] = mainOrg[i][j], mainOrg[i][j].ledTurn(i, j);
+  for(int i = 0 ; i < 20 ; ++i) {
+    mainCpy[i][13] = mainCpy[i][2] = mainOrg[i][13] = mainOrg[i][2] = wall;
+    mainOrg[i][2].ledTurn(i, 2);
+    mainOrg[i][13].ledTurn(i, 13);
+  }
+  for(int i = 0 ; i < 3 ; ++i) {
+    for(int j = 0 ; j < 3 ; ++j) {
+      if(blocks[blockType][blockState][i][j] != empty) {
+        mainOrg[bx + i][by + j] = blocks[blockType][blockState][i][j];
+        mainCpy[bx][by] = mainOrg[bx][by];
+        mainOrg[bx][by].ledTurn(bx, by);
+      }
+    }
+  }
 }
 
 void loop() {
@@ -62,47 +66,37 @@ void moveBlock(int key) { // 조이스틱의 입력값을 받아서 블럭을 �
   if(key) {
     switch(key) {
       case UP :         rotation++; break;
-      case UP_LEFT :    rotation++; break;
+      case UP_LEFT :    rotation--; break;
       case LEFT :       y--;        break;
       case DOWN_LEFT :  x--, y--;   break;
       case DOWN :       x--;        break;
       case DOWN_RIGTH : x--, y++;   break;
       case RIGHT :      y++;        break;
-      case UP_RIGTH :   rotation--; break;
+      case UP_RIGTH :   rotation++; break;
       case ON :
       // hard drop
       break;     
     }
     if(key != ON && checkCrush(x, y, rotation)) {
-      setBlockOff();
-      setBlockOn(x, y, rotation);
-      bx = (bx + x >= 0 ? bx + x : 0), by += y;
+      for(int i = 0 ; i < 3 ; ++i)
+        for(int j = 0 ; j < 3 ; ++j)
+          if(blocks[blockType][blockState][i][j] != empty)
+            mainOrg[bx + i][by + j].setLedOff();
+      for(int i = 0 ; i < 3 ; ++i)
+        for(int j = 0 ; j < 3 ; ++j)
+          if(blocks[blockType][(blockState + rotation + 4) % 4][i][j] != empty)
+            mainOrg[(bx + x + i + 32) % 32][by + y + j] = blocks[blockType][(blockState + rotation + 4) % 4][i][j];
+      bx = (bx + x + 32) % 32, by += y;
       blockState = (blockState + rotation + 4) % 4;
     }
   }
 }
-void setBlockOff() {  // 현재 좌표의 블럭을 꺼줌
-  for(int i = 0 ; i < 4 ; ++i)
-    for(int j = 0 ; j < 4 ; ++j)
-      if(blocks[blockType][blockState][i][j] != empty)
-        mainOrg[bx + i][by + j].setLedOff();
-}
-void setBlockOn(int x, int y, int rotation) {   // x, y만큼 좌표를 옮긴 위치 or 회전한 위치에 블럭을 켜줌
-  for(int i = 0 ; i < 4 ; ++i)
-        for(int j = 0 ; j < 4 ; ++j)
-          if(blocks[blockType][(blockState + rotation + 4) % 4][i][j] != empty)
-            mainOrg[bx + x + i][by + y + j] = blocks[blockType][(blockState + rotation + 4) % 4][i][j];
-}
 bool checkCrush(int x, int y, int rotation) {  // 벽면, 블록간의 충돌 검사
-  int tx, ty;
-  for(int i = 0 ; i < 4 ; ++i)
-    for(int j = 0 ; j < 4 ; ++j) {
-      tx = (bx + x + i + 32) % 32;
-      ty = (by + y + j);
+  for(int i = 0 ; i < 3 ; ++i)
+    for(int j = 0 ; j < 3 ; ++j)
       if(blocks[blockType][(blockState + rotation + 4) % 4][i][j] != empty)
-        if(!((3 <= ty && ty <= 12) && (0 <= tx && tx <= 19)))
+        if(!((3 <= by + y + j && by + y + j <= 12) && (0 <= bx + x + i && bx + x + i <= 19)))
           return false;
-    }
   return true;
 }
 void drawMain() { // 게임판을 그려줌
