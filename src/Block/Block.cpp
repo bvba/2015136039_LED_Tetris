@@ -17,6 +17,10 @@ Block minoT(2, 0, 2, true); // T purple
 Block wall(4, 2, 1, true);  // wall
 
 // 테트리미노를 나타내기 위한 배열
+Block blockI[2][4][4] = {	// I(i) 모양 블록을 나타내는 배열, 2가지 방향, 4 * 4 배열
+	{{minoI, minoI, minoI, minoI}, empty4, empty4, empty4},
+	{{empty, minoI, empty, empty}, {empty, minoI, empty, empty}, {empty, minoI, empty, empty}, {empty, minoI, empty, empty}}
+};
 Block blocks[6][4][3][3] = {      // 6가지 모양(blockType), 4가지 방향(blockState), 3 * 3 배열
 	// mino Z
 	{{{empty, minoZ, empty}, {empty, minoZ, minoZ}, {empty, empty, minoZ}},
@@ -53,7 +57,7 @@ Block blocks[6][4][3][3] = {      // 6가지 모양(blockType), 4가지 방향(b
 	{{empty, minoT, empty}, {empty, minoT, minoT}, {empty, minoT, empty}},
 	{empty3, {minoT, minoT, minoT}, {empty, minoT, empty}},
 	{{empty, minoT, empty}, {minoT, minoT, empty}, {empty, minoT, empty}}}
-	};
+};
 
 	Block::Block() {
 		setBlock(0, 0, 0, false);
