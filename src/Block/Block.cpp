@@ -59,35 +59,43 @@ Block blocks[6][4][3][3] = {      // 6가지 모양(blockType), 4가지 방향(b
 	{{empty, minoT, empty}, {minoT, minoT, empty}, {empty, minoT, empty}}}
 };
 
-	Block::Block() {
-		setBlock(0, 0, 0, false);
-	}	// default 생성자
-	Block::Block(uint8_t r, uint8_t g, uint8_t b, bool onOff) {
-		setBlock(r, g, b, onOff);
-	}	// 생성자
-	void Block::setBlock(uint8_t r1, uint8_t g1, uint8_t b1, bool state) {
-		r = r1;
-		g = g1;
-		b = b1;
-		onOff = state;
-	}	// Block 필드값 설정 및 생성에 쓰임
-	void Block::setLedOff() {
-		setBlock(0, 0, 0, false);
-	}	// led 소등(실제로 꺼지지는 않고 onOff 값만 바꿔줌, 상태가 바뀌면 drawMain(ledTurn)에서 꺼줌)
-	void Block::ledTurn(int x, int y) {
-		if(onOff) matrix.drawPixel(x, y, matrix.Color333(r, g, b));
-		else matrix.drawPixel(x, y, matrix.Color333(0, 0, 0));
-	}	// (외부에서 조절)(Block의 onOff 값이 변경되었다면) led를 끄거나 켜줌
-	bool Block::operator == (const Block & p) {
-		if(r == p.r && g == p.g && b == p.g && onOff == p.onOff) return true;
-		else return false;
-	}	// == operator overloading
-	bool Block::operator != (const Block & p) {
-		if(r != p.r || g != p.g || b != p.g || onOff != p.onOff) return true;
-		else return false;
-	}	// != operator overloading
-	Block& Block::operator = (const Block & p) {
-		r = p.r, g = p.g, b = p.b;
-		onOff = p.onOff;
-		return *this;
-	}	// = operator overloading
+Block::Block() {
+	setBlock(0, 0, 0, false);
+}	// default 생성자
+Block::Block(uint8_t r, uint8_t g, uint8_t b, bool onOff) {
+	setBlock(r, g, b, onOff);
+}	// 생성자
+void Block::setBlock(uint8_t r1, uint8_t g1, uint8_t b1, bool state) {
+	r = r1;
+	g = g1;
+	b = b1;
+	onOff = state;
+}	// Block 필드값 설정 및 생성에 쓰임
+void Block::setLedOff() {
+	setBlock(0, 0, 0, false);
+}	// led 소등(실제로 꺼지지는 않고 onOff 값만 바꿔줌, 상태가 바뀌면 drawMain(ledTurn)에서 꺼줌)
+void Block::ledTurn(int x, int y) {
+	if(onOff) matrix.drawPixel(x, y, matrix.Color333(r, g, b));
+	else matrix.drawPixel(x, y, matrix.Color333(0, 0, 0));
+}	// (외부에서 조절)(Block의 onOff 값이 변경되었다면) led를 끄거나 켜줌
+bool Block::operator == (const Block & p) {
+	if(r == p.r && g == p.g && b == p.g && onOff == p.onOff) return true;
+	else return false;
+}	// == operator overloading
+bool Block::operator != (const Block & p) {
+	if(r != p.r || g != p.g || b != p.g || onOff != p.onOff) return true;
+	else return false;
+}	// != operator overloading
+Block& Block::operator = (const Block & p) {
+	r = p.r, g = p.g, b = p.b;
+	onOff = p.onOff;
+	return *this;
+}	// = operator overloading
+static bool Block::empty3Check(Block b1[3]) {
+	for(int i = 0 ; i < 3 ; ++i)
+		if(b1[i] != empty) return false;
+	return true;
+}
+static bool Block::empty4Check(Block b1[4]) {
+
+}
