@@ -11,7 +11,7 @@ int level = 0;              // 레벨에 따른 속도 조절
 int blockType;              // 현재 블록의 종류
 int blockState;             // 현재 블록의 방향 상태
 uint8_t bx = 15, by = 7;    // 테스트를 위해 초기값 설정해놓음 추후 reset 할것!
-extern Block empty, minoZ, minoL, minoO, minoS, minoI, minoJ, minoT, wall;
+extern Block empty, empty3, empty4, minoZ, minoL, minoO, minoS, minoI, minoJ, minoT, wall;
 extern Block blockI[2][4][4];
 extern Block blocks[6][4][3][3];
 Block mainOrg[MAIN_X][MAIN_Y];  // 게임판의 상태를 저장하는 배열
@@ -35,7 +35,6 @@ void setup() {
   randomSeed(analogRead(A7));
   random(100);
   blockType = random(100000) % 7;
-  blockType = 6;
   blockState = random(10000) % 4;
   for(int i = 0 ; i < 20 ; ++i)
     mainOrg[i][13] = mainOrg[i][2] = wall;
@@ -74,6 +73,7 @@ void moveBlock(int key) { // 조이스틱의 입력값을 받아서 블럭을 �
       break;     
     }
     if(key != ON && checkCrush(x, y, rotation)) {
+      Serial.print("check\n");
       setBlockOff();
       setBlockOn(x, y, rotation);
       bx += x, by += y;
@@ -99,7 +99,7 @@ void setBlockOn(int x, int y, int rotation) {   // x, y만큼 좌표를 옮긴 �
   if(blockType == 6) {
     for(int i = 0 ; i < 4 ; ++i)
       for(int j = 0 ; j < 4 ; ++j)
-        if(blockI[blockState % 2][i][j] != empty)
+        if(blockI[(blockState + rotation + 2) % 2][i][j] != empty)
           mainOrg[bx + x + i][by + y + j] = blockI[(blockState + rotation + 2) % 2][i][j];
   }
   else {
@@ -110,18 +110,25 @@ void setBlockOn(int x, int y, int rotation) {   // x, y만큼 좌표를 옮긴 �
   }
 }
 bool checkCrush(int x, int y, int rotation) {  // 벽면, 블록간의 충돌 검사
-  for(int i = 0 ; i < 3 ; ++i)
-    for(int j = 0 ; j < 3 ; ++j) {
-      if(blockType == 6) {
-        if(blockI[(blockState + rotation + 2) % 2][i][j] != empty)
-          if(!((3 <= by + y + j && by + y + j <= 12) && (0 <= bx + x + i && bx + x + i <= 19)))
-            return false;
-      }
-      else {
+  if(blockType == 6) {
+    for(int i = 0 ; i < 4 ; ++i)
+      for(int j = 0 ; j < 4 ; ++j)
+        if(blockType == 6)
+          if(blockI[(blockState + rotation + 2) % 2][i][j] != empty)
+            if(!((3 <= by + y + j && by + y + j <= 12) && (0 <= bx + x + i && bx + x + i <= 19)))
+              return false;
+  }
+  else {
+    if(Block::empty3Check(blocks[blockType][(blockState + rotation + 4) % 4][0])) {
+      Serial.println(x);
+      x++;
+      Serial.println(x);
+    }
+    for(int i = 0 ; i < 3 ; ++i)
+      for(int j = 0 ; j < 3 ; ++j)
         if(blocks[blockType][(blockState + rotation + 4) % 4][i][j] != empty)
           if(!((3 <= by + y + j && by + y + j <= 12) && (0 <= bx + x + i && bx + x + i <= 19)))
             return false;
-      }
     }
   return true;
 }
