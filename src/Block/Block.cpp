@@ -1,27 +1,27 @@
 #include "Arduino.h"
 #include "Block.h"
 
-// í…ŒíŠ¸ë¦¬ë¯¸ë…¸ë¥¼ ì„¤ì •í•  ë•Œ ì“°ì´ëŠ” ë¸”ë¡
+// Å×Æ®¸®¹Ì³ë¸¦ ¼³Á¤ÇÒ ¶§ ¾²ÀÌ´Â ºí·Ï
 Block empty3[3];
 Block empty4[4];
-Block empty(0, 0, 0, false);// empty
-Block minoZ(2, 0, 0, true); // Z red
-Block minoL(2, 1, 0, true); // L orange
-Block minoO(2, 2, 0, true); // O yellow
-Block minoS(0, 2, 0, true); // S green
-Block minoI(0, 2, 2, true); // I sky
-Block minoJ(0, 0, 2, true); // J blue
-Block minoT(2, 0, 2, true); // T purple
+Block empty(0, 0, 0, false, false);// empty
+Block minoZ(2, 0, 0, true, true); // Z red
+Block minoL(2, 1, 0, true, true); // L orange
+Block minoO(2, 2, 0, true, true); // O yellow
+Block minoS(0, 2, 0, true, true); // S green
+Block minoI(0, 2, 2, true, true); // I sky
+Block minoJ(0, 0, 2, true, true); // J blue
+Block minoT(2, 0, 2, true, true); // T purple
 
-// ê²Œì„íŒì˜ ë²½ì„ ì„¤ì •í•  ë•Œ ì“°ì´ëŠ” ë¸”ë¡
-Block wall(4, 2, 1, true);  // wall
+// °ÔÀÓÆÇÀÇ º®À» ¼³Á¤ÇÒ ¶§ ¾²ÀÌ´Â ºí·Ï
+Block wall(4, 2, 1, true, false);  // wall
 
-// í…ŒíŠ¸ë¦¬ë¯¸ë…¸ë¥¼ ë‚˜íƒ€ë‚´ê¸° ìœ„í•œ ë°°ì—´
-Block blockI[2][4][4] = {	// I(i) ëª¨ì–‘ ë¸”ë¡ì„ ë‚˜íƒ€ë‚´ëŠ” ë°°ì—´, 2ê°€ì§€ ë°©í–¥, 4 * 4 ë°°ì—´
+// Å×Æ®¸®¹Ì³ë¸¦ ³ªÅ¸³»±â À§ÇÑ ¹è¿­
+Block blockI[2][4][4] = {	// I(i) ¸ğ¾ç ºí·ÏÀ» ³ªÅ¸³»´Â ¹è¿­, 2°¡Áö ¹æÇâ, 4 * 4 ¹è¿­
 	{{minoI, minoI, minoI, minoI}, empty4, empty4, empty4},
 	{{empty, minoI, empty, empty}, {empty, minoI, empty, empty}, {empty, minoI, empty, empty}, {empty, minoI, empty, empty}}
 };
-Block blocks[6][4][3][3] = {      // 6ê°€ì§€ ëª¨ì–‘(blockType), 4ê°€ì§€ ë°©í–¥(blockState), 3 * 3 ë°°ì—´
+Block blocks[6][4][3][3] = {      // 6°¡Áö ¸ğ¾ç(blockType), 4°¡Áö ¹æÇâ(blockState), 3 * 3 ¹è¿­
 	// mino Z
 	{{{empty, minoZ, empty}, {empty, minoZ, minoZ}, {empty, empty, minoZ}},
 	{{empty, minoZ, minoZ}, {minoZ, minoZ, empty}, empty3},
@@ -60,24 +60,25 @@ Block blocks[6][4][3][3] = {      // 6ê°€ì§€ ëª¨ì–‘(blockType), 4ê°€ì§€ ë°©í–¥(b
 };
 
 Block::Block() {
-	setBlock(0, 0, 0, false);
-}	// default ìƒì„±ì
-Block::Block(uint8_t r, uint8_t g, uint8_t b, bool onOff) {
-	setBlock(r, g, b, onOff);
-}	// ìƒì„±ì
-void Block::setBlock(uint8_t r1, uint8_t g1, uint8_t b1, bool state) {
+	setBlock(0, 0, 0, false, false);
+}	// default »ı¼ºÀÚ
+Block::Block(uint8_t r, uint8_t g, uint8_t b, bool onOff, bool moving) {
+	setBlock(r, g, b, onOff, moving);
+}	// »ı¼ºÀÚ
+void Block::setBlock(uint8_t r1, uint8_t g1, uint8_t b1, bool state, bool moveState) {
 	r = r1;
 	g = g1;
 	b = b1;
 	onOff = state;
-}	// Block í•„ë“œê°’ ì„¤ì • ë° ìƒì„±ì— ì“°ì„
+	moving = moveState;
+}	// Block ÇÊµå°ª ¼³Á¤ ¹× »ı¼º¿¡ ¾²ÀÓ
 void Block::setLedOff() {
-	setBlock(0, 0, 0, false);
-}	// led ì†Œë“±(ì‹¤ì œë¡œ êº¼ì§€ì§€ëŠ” ì•Šê³  onOff ê°’ë§Œ ë°”ê¿”ì¤Œ, ìƒíƒœê°€ ë°”ë€Œë©´ drawMain(ledTurn)ì—ì„œ êº¼ì¤Œ)
+	setBlock(0, 0, 0, false, false);
+}	// led ¼Òµî(½ÇÁ¦·Î ²¨ÁöÁö´Â ¾Ê°í onOff °ª¸¸ ¹Ù²ãÁÜ, »óÅÂ°¡ ¹Ù²î¸é drawMain(ledTurn)¿¡¼­ ²¨ÁÜ)
 void Block::ledTurn(int x, int y) {
 	if(onOff) matrix.drawPixel(x, y, matrix.Color333(r, g, b));
 	else matrix.drawPixel(x, y, matrix.Color333(0, 0, 0));
-}	// (ì™¸ë¶€ì—ì„œ ì¡°ì ˆ)(Blockì˜ onOff ê°’ì´ ë³€ê²½ë˜ì—ˆë‹¤ë©´) ledë¥¼ ë„ê±°ë‚˜ ì¼œì¤Œ
+}	// (¿ÜºÎ¿¡¼­ Á¶Àı)(BlockÀÇ onOff °ªÀÌ º¯°æµÇ¾ú´Ù¸é) led¸¦ ²ô°Å³ª ÄÑÁÜ
 bool Block::operator == (const Block & p) {
 	if(r == p.r && g == p.g && b == p.g && onOff == p.onOff) return true;
 	else return false;
