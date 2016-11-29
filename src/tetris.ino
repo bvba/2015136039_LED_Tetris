@@ -10,7 +10,7 @@ RGBmatrixPanel matrix(A, B, C, CLK, LAT, OE, false);
 int level = 0;              // 레벨에 따른 속도 조절
 int blockType;              // 현재 블록의 종류
 int blockState;             // 현재 블록의 방향 상태
-int bx = 15, by = 7;        // 테스트를 위해 초기값 설정해놓음 추후 reset 할것!
+int bx, by;        // 테스트를 위해 초기값 설정해놓음 추후 reset 할것!
 extern Block empty, empty3, empty4, minoZ, minoL, minoO, minoS, minoI, minoJ, minoT, wall;
 extern Block blockI[2][4][4];
 extern Block blocks[6][4][3][3];
@@ -19,6 +19,8 @@ Block mainCpy[MAIN_X][MAIN_Y];  // 게임판의 상태가 바뀌었는지 확인
 
 void moveBlock(int key);    // joyStick 입력값을 받아서 블럭을 옮겨주는 함수
 bool dropBlock();           // 일정 시간마다 블럭을 한 칸 내려주는 함수
+void hardenBlock();         // 움직임이 끝난 블럭의 Block::moving 을 fix로 설정해주는 함수
+void checkDelLine();        // 한 줄이 꽉 찼는지 체크하고 삭제하는 함수
 void newBlock();            // 새 블럭을 만드는 함수
 void setBlockOff();         // 블럭을 empty로 설정(실제로 지우지는 않음)
 void setBlockOn(int x, int y, int rotation);  // 블럭을 on상태로 설정(실제로 켜주지는 않음)
@@ -35,9 +37,8 @@ void setup() {
   digitalWrite(joyStickSW, HIGH); // pull up 설정
   Serial.begin(9600);
   randomSeed(analogRead(A7));
-  blockType = random(100000) % 7;
 
-  setBlockOn(0, 0, 0);
+  newBlock();
   for(int i = 0 ; i < 20 ; ++i)
     mainOrg[i][13] = mainOrg[i][2] = wall;
   
@@ -52,10 +53,13 @@ void loop() {
     drawMain();
     delay(200 - level * 5);
   }
-  if(dropBlock())
-    Serial.println("drop!");
-  else
+  if(dropBlock());
+  else {
+    hardenBlock();
+    checkDelLine();
     newBlock();
+    drawMain();
+  }
 }
 
 
@@ -93,10 +97,39 @@ bool dropBlock(){           // 블럭을 한 칸 내려주는 함수
   }
   else return false;
 }
+void hardenBlock(){         // 움직임이 끝난 블럭의 Block::moving 을 fix로 설정해주는 함수
+  if(blockType == 6) {
+    for(int i = 0 ; i < 4 ; ++i)
+      for(int j = 0 ; j < 4 ; ++j)
+        if(blockI[blockState % 2][i][j] != empty)
+          mainOrg[bx + i][by + j].moving = false;
+  }
+  else {
+    for(int i = 0 ; i < 3 ; ++i)
+      for(int j = 0 ; j < 3 ; ++j)
+        if(blocks[blockType][blockState][i][j] != empty)
+          mainOrg[bx + i][by + j].moving = false;
+  }
+}
+void checkDelLine(){        // 한 줄이 꽉 찼는지 체크하고 삭제하는 함수
+  for(int i = 0 ; i < 20 ; ++i) {
+    int cnt = 0;
+    for(int j = 3 ; j < 13 ; ++j) {
+      if(mainOrg[i][j] != empty)
+        cnt++;
+    }
+    if(cnt == 10) {
+      for(int k = i ; k < 20 - 1 ; ++k)
+        for(int l = 3 ; l < 13 ; ++l)
+          mainOrg[k][l] = mainOrg[k + 1][l];
+      i--;
+    }
+  }
+}
 void newBlock(){            // 새 블럭을 만드는 함수
   blockType = random(100000) % 7;
   blockState = 0;
-  bx = 15, by = 7;
+  bx = 17, by = 7;
   setBlockOn(0, 0, 0);
 }
 void setBlockOff() {  // 현재 좌표의 블럭을 꺼줌
@@ -137,18 +170,20 @@ bool checkCrush(int x, int y, int rotation) {  // 벽면, 블록간의 충돌 �
     for(int i = 0 ; i < 4 ; ++i)
       for(int j = 0 ; j < 4 ; ++j) {
         int tx = bx + x + i, ty = by + y + j;
-        if(blockI[(blockState + rotation + 2) % 2][i][j] != empty)
-          if(!((3 <= ty && ty <= 12) && (0 <= tx && tx <= 19)))
+        if(blockI[(blockState + rotation + 2) % 2][i][j] != empty) {
+          if(!((3 <= ty && ty <= 12) && (0 <= tx && tx <= 19)) || (mainOrg[tx][ty] != empty && mainOrg[tx][ty].moving == false))
             return false;
+        }
       }
   }
   else {
     for(int i = 0 ; i < 3 ; ++i)
       for(int j = 0 ; j < 3 ; ++j) {
       int tx = bx + x + i, ty = by + y + j;
-        if(blocks[blockType][(blockState + rotation + 4) % 4][i][j] != empty)
-          if(!((3 <= ty && ty <= 12) && (0 <= tx && tx <= 19)))
+        if(blocks[blockType][(blockState + rotation + 4) % 4][i][j] != empty) {
+          if(!((3 <= ty && ty <= 12) && (0 <= tx && tx <= 19)) || (mainOrg[tx][ty] != empty && mainOrg[tx][ty].moving == false))
             return false;
+        }
       }
   }
   return true;
@@ -160,8 +195,9 @@ void drawMain() { // 게임판을 그려줌
         mainOrg[x][y].ledTurn(x, y);
     }
     
-  for(int x = 0 ; x < MAIN_X ; ++x)     // 변경사항을 org에 저장
+  for(int x = 0 ; x < MAIN_X ; ++x)     // 변경사항을 cpy에 저장
     for(int y = 0 ; y < MAIN_Y ; ++y)
       mainCpy[x][y] = mainOrg[x][y];
 }
+
 

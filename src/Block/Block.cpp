@@ -80,23 +80,16 @@ void Block::ledTurn(int x, int y) {
 	else matrix.drawPixel(x, y, matrix.Color333(0, 0, 0));
 }	// (외부에서 조절)(Block의 onOff 값이 변경되었다면) led를 끄거나 켜줌
 bool Block::operator == (const Block & p) {
-	if(r == p.r && g == p.g && b == p.g && onOff == p.onOff) return true;
+	if(r == p.r && g == p.g && b == p.g && onOff == p.onOff && moving == p.moving) return true;
 	else return false;
 }	// == operator overloading
 bool Block::operator != (const Block & p) {
-	if(r != p.r || g != p.g || b != p.g || onOff != p.onOff) return true;
+	if(r != p.r || g != p.g || b != p.g || onOff != p.onOff || moving != p.moving) return true;
 	else return false;
 }	// != operator overloading
 Block& Block::operator = (const Block & p) {
 	r = p.r, g = p.g, b = p.b;
 	onOff = p.onOff;
+	moving = p.moving;
 	return *this;
 }	// = operator overloading
-static bool Block::empty3Check(Block b1[3]) {
-	for(int i = 0 ; i < 3 ; ++i)
-		if(b1[i] != empty) return false;
-	return true;
-}
-static bool Block::empty4Check(Block b1[4]) {
-
-}
