@@ -17,7 +17,7 @@ extern Block blocks[6][4][3][3];
 Block mainOrg[MAIN_X][MAIN_Y];  // 게임판의 상태를 저장하는 배열
 Block mainCpy[MAIN_X][MAIN_Y];  // 게임판의 상태가 바뀌었는지 확인하기 위한 배열
 
-void moveBlock(int key);    // joyStick 입력값을 받아서 블럭을 옮겨주는 함수
+bool moveBlock(int key);    // joyStick 입력값을 받아서 블럭을 옮겨주는 함수
 bool dropBlock();           // 일정 시간마다 블럭을 한 칸 내려주는 함수
 void hardenBlock();         // 움직임이 끝난 블럭의 Block::moving 을 fix로 설정해주는 함수
 void checkDelLine();        // 한 줄이 꽉 찼는지 체크하고 삭제하는 함수
@@ -66,9 +66,10 @@ void loop() {
 
 
 
-void moveBlock(int key) { // 조이스틱의 입력값을 받아서 블럭을 옮겨줌
+bool moveBlock(int key) { // 조이스틱의 입력값을 받아서 블럭을 옮겨줌
   int x = 0, y = 0, rotation = 0;
   if(key) {
+    Serial.println(key);
     switch(key) {
       case UP :         rotation++; break;
       case UP_LEFT :    rotation--; break;
@@ -78,9 +79,8 @@ void moveBlock(int key) { // 조이스틱의 입력값을 받아서 블럭을 �
       case DOWN_RIGTH : x--, y++;   break;
       case RIGHT :      y++;        break;
       case UP_RIGTH :   rotation++; break;
-      case ON :
-      // hard drop
-      break;     
+      case ON :      // hard drop
+      break;
     }
     if(key != ON && checkCrush(x, y, rotation)) {
       setBlockOff();
