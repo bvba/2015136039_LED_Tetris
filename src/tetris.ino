@@ -34,7 +34,6 @@ void drawMain();            // 게임판을 출력해주는 함수
 void setup() {
   matrix.begin(); // dotMatrix 사용 시작
   pinMode(joyStickSW, INPUT);     // pin mode 설정
-  digitalWrite(joyStickSW, HIGH); // pull up 설정
   Serial.begin(9600);
   randomSeed(analogRead(A7));
 
@@ -79,8 +78,10 @@ bool moveBlock(int key) { // 조이스틱의 입력값을 받아서 블럭을 �
       case DOWN_RIGTH : x--, y++;   break;
       case RIGHT :      y++;        break;
       case UP_RIGTH :   rotation++; break;
+      default : break;
       case ON :      // hard drop
-      break;
+      while(dropBlock());
+      return true;      
     }
     if(key != ON && checkCrush(x, y, rotation)) {
       setBlockOff();
@@ -199,5 +200,6 @@ void drawMain() { // 게임판을 그려줌
     for(int y = 0 ; y < MAIN_Y ; ++y)
       mainCpy[x][y] = mainOrg[x][y];
 }
+
 
 

@@ -14,7 +14,7 @@
 #define ON          9
 #define joyStickX   A4
 #define joyStickY   A5
-#define joyStickSW  2
+#define joyStickSW  A6
 
 int joyStick();
 

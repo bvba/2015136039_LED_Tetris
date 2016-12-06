@@ -28,6 +28,4 @@ public :
 	bool onOff;       // led의 on, off 상태를 나타냄
 	bool moving;
 };
-
-
 #endif

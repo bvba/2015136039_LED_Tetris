@@ -4,10 +4,9 @@
 int joyStick() {  // 조이스틱의 입력값을 반환
   int x = analogRead(joyStickX);
   int y = analogRead(joyStickY);
-  int sw = digitalRead(joyStickSW);
-  Serial.print(x);
-  Serial.print(" ");
-  Serial.println(y);
+  int sw = analogRead(joyStickSW);
+  
+  if(sw == 1023)           return ON;
   if(x >= 800) {
     if(y >= 800)        return UP_LEFT;
     else if(y <= 200)   return DOWN_LEFT;
@@ -22,6 +21,5 @@ int joyStick() {  // 조이스틱의 입력값을 반환
     if(y >= 800)        return UP;
     else if(y <= 200)   return DOWN;
   }
-  if(sw == 0)           return ON;
   return 0;
 }
