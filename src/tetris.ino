@@ -25,6 +25,7 @@ bool moveBlock(int key);    // joyStick 입력값을 받아서 블럭을 옮겨�
 bool dropBlock();           // 일정 시간마다 블럭을 한 칸 내려주는 함수
 void hardenBlock();         // 움직임이 끝난 블럭의 Block::moving 을 fix로 설정해주는 함수
 void checkDelLine();        // 한 줄이 꽉 찼는지 체크하고 삭제하는 함수
+void levelUp();             // 지운 줄 수에 따라 레벨업을 수행하는 함수
 void newBlock();            // 새 블럭을 만드는 함수
 
 void setBlockOff();         // 블럭을 empty로 설정(실제로 지우지는 않음)
@@ -52,13 +53,14 @@ void loop() {
     for(int i = 0 ; i < 5 ; ++i) {
     moveBlock(joyStick());
     drawMain();
-    delay(200 - level * 5);
+    delay(200 - level * 10);
     }
 
     if(dropBlock());
     else if(bx < 17) {
       hardenBlock();
       checkDelLine();
+      levelUp();
       newBlock();
       drawMain();
     }
@@ -128,9 +130,15 @@ void checkDelLine(){        // 한 줄이 꽉 찼는지 체크하고 삭제하�
       for(int k = i ; k < 20 - 1 ; ++k)
         for(int l = 3 ; l < 13 ; ++l)
           mainOrg[k][l] = mainOrg[k + 1][l];
-      i--;
+      clearLine++, i--;
     }
   }
+}
+void levelUp(){             // 지운 줄 수에 따라 레벨업을 수행하는 함수
+  if(clearLine >= 10 + level && level < 10)
+    level++, clearLine = 0;
+  for(int i = 0 ; i < level ; ++i)
+    mainOrg[26][i + 3].setBlock(1, 1, 1, true, false);
 }
 void newBlock(){            // 새 블럭을 만드는 함수
   blockType = random(100000) % 7;
@@ -218,4 +226,3 @@ void reset(){               // 게임판을 초가화 해주는 함수
   newBlock();
   drawMain();
 }
-
