@@ -53,7 +53,7 @@ void loop() {
     for(int i = 0 ; i < 5 ; ++i) {
     moveBlock(joyStick());
     drawMain();
-    delay(200 - level * 10);
+    delay(150 - level * 10);
     }
 
     if(dropBlock());
@@ -135,8 +135,8 @@ void checkDelLine(){        // 한 줄이 꽉 찼는지 체크하고 삭제하�
   }
 }
 void levelUp(){             // 지운 줄 수에 따라 레벨업을 수행하는 함수
-  if(clearLine >= 10 + level && level < 10)
-    level++, clearLine = 0;
+  if(clearLine >= 5 && level < 10)
+    level++, clearLine -= 5;
   for(int i = 0 ; i < level ; ++i)
     mainOrg[26][i + 3].setBlock(1, 1, 1, true, false);
 }
