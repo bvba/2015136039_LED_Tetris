@@ -8,3 +8,6 @@ http://m.blog.naver.com/azure0777/220295388741
 
 https://circuits.io
 // arduino test
+
+https://goo.gl/gQa27p
+// 시연 동영상
