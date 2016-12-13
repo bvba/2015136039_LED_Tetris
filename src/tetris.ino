@@ -53,7 +53,7 @@ void loop() {
     for(int i = 0 ; i < 5 ; ++i) {
     moveBlock(joyStick());
     drawMain();
-    delay(150 - level * 10);
+    delay(200 - level * 10);
     }
 
     if(dropBlock());
