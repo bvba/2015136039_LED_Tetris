@@ -11,10 +11,10 @@
 #define DOWN_RIGTH  6
 #define RIGHT       7
 #define UP_RIGTH    8
-#define ON          9
-#define joyStickX   A4
-#define joyStickY   A5
-#define joyStickSW  2
+#define ON          9	// 방향값 상수 설정
+#define joyStickX   A4	// x축 입력 pin
+#define joyStickY   A5	// y축 입력 pin
+#define joyStickSW  2	// switch 입력 pin
 
 int joyStick();
 

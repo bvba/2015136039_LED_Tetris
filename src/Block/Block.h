@@ -22,10 +22,10 @@ public :
 	void ledTurn(int x, int y);			// (외부에서 조절)(Block의 onOff 값이 변경되었다면) led를 끄거나 켜줌
 	bool operator == (const Block & p);	// == operator overloading
 	bool operator != (const Block & p);	// != operator overloading
-	Block& operator = (const Block & p);	// = operator overloading
+	Block& operator = (const Block & p);// = operator overloading
 public :
-	uint8_t r, g, b;  // 색상, r = g = b 일 경우 흰색, 숫자가 커지면 밝아진다
-	bool onOff;       // led의 on, off 상태를 나타냄
-	bool moving;
+	uint8_t r, g, b;// 색상, r = g = b 일 경우 흰색, 숫자가 커지면 밝아진다
+	bool onOff;		// led의 on, off 상태를 나타냄
+	bool moving;	// 블럭의 상태(고정 or 움직임)
 };
 #endif
