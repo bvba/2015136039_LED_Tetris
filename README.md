@@ -3,11 +3,5 @@
 https://www.adafruit.com/product/420
 // rgb dot matrix [ada420]
 
-http://m.blog.naver.com/azure0777/220295388741
-// tetris
-
-https://circuits.io
-// arduino test
-
-https://goo.gl/gQa27p
+https://goo.gl/BxSi1w
 // 시연 동영상
