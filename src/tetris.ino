@@ -180,26 +180,30 @@ void checkDelLine(){        // 한 줄이 꽉 찼는지 체크하고 삭제하�
   if(score > 10000) score = 9999;
 }
 void levelUp(){             // 점수에 따라 레벨업을 수행하는 함수
-  if((score >= 50 * (level + 1)) && level < 10)
-    level++;
-  switch(level) {
-    case 1 : case 2 : case 3 : case 4 :
-    mainOrg[level][13].setBlock(0, 1, 0, true, false);
-    mainOrg[level][14].setBlock(0, 1, 0, true, false);
-    break;
-    case 5 : case 6 : case 7 :
-    mainOrg[level][13].setBlock(1, 1, 0, true, false);
-    mainOrg[level][14].setBlock(1, 1, 0, true, false);
-    break;
-    case 8 : case 9:
-    mainOrg[level][13].setBlock(3, 1, 0, true, false);
-    mainOrg[level][14].setBlock(3, 1, 0, true, false);
-    break;
-    case 10:
-    mainOrg[level][13].setBlock(1, 0, 0, true, false);
-    mainOrg[level][14].setBlock(1, 0, 0, true, false);
-    break;
-  }
+  int tmp;
+  do {
+    tmp = level;
+    if((score >= 50 * (level + 1)) && level < 10)
+      level++;
+    switch(level) {
+      case 1 : case 2 : case 3 : case 4 :
+      mainOrg[level][13].setBlock(0, 1, 0, true, false);
+      mainOrg[level][14].setBlock(0, 1, 0, true, false);
+      break;
+      case 5 : case 6 : case 7 :
+      mainOrg[level][13].setBlock(1, 1, 0, true, false);
+      mainOrg[level][14].setBlock(1, 1, 0, true, false);
+      break;
+      case 8 : case 9:
+      mainOrg[level][13].setBlock(3, 1, 0, true, false);
+      mainOrg[level][14].setBlock(3, 1, 0, true, false);
+      break;
+      case 10:
+      mainOrg[level][13].setBlock(1, 0, 0, true, false);
+      mainOrg[level][14].setBlock(1, 0, 0, true, false);
+      break;
+      }
+  } while(tmp != level);
 }
 bool newBlock(){            // 새 블럭을 만드는 함수
   blockState = 0;   // 방향 초기화
